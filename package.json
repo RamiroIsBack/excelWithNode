@@ -1,0 +1,15 @@
+{
+  "name": "excelwithnode",
+  "version": "1.0.0",
+  "description": "do some inter .xlsx documents functions",
+  "main": "App.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ramiro",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "exceljs": "^1.6.0"
+  }
+}
