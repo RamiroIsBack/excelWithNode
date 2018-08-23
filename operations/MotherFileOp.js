@@ -1,17 +1,14 @@
 var Excel = require("exceljs");
 var mapSeries = require("async/mapSeries");
 var getDataFromFileChild = require("./ChildFileOp.js").getDataFromFileChild;
+var helpingFunctions = require("./HelpingFunctions.js");
 
-const writeDataInMother = (results, worksheet) => {
-  //write dadta into Mother
-  console.log("finikitaun", dataObject);
-};
 module.exports.readingMotherFile = documentList => {
   var workbook = new Excel.Workbook();
   workbook.xlsx
     .readFile("./files/Stock Loading-Inter and FG.xlsx")
     .then(function() {
-      console.log("caca de mother");
+      console.log("pass mother");
       var worksheet = workbook.getWorksheet("Stock Detailed");
       var formulaCol = worksheet.getColumn("A");
       var itemNumberCol = worksheet.getColumn("C");
@@ -51,7 +48,7 @@ module.exports.readingMotherFile = documentList => {
         function(err, results) {
           if (err) console.log(err); //TODO::: somenthing more??
           //results will be an array of objects
-          writeDataInMother(results, worksheet);
+          helpingFunctions.writeDataInMother(results, worksheet);
         }
       );
     });
