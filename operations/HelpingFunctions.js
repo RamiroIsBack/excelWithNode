@@ -1,4 +1,5 @@
-var Excel = require("exceljs");
+////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// FUNCTIONS FOR CHILD //////////////////////////////////////////////////
 
 module.exports.getExpeditionsColumn = rowToFindExp => {
   var found = 0;
@@ -26,41 +27,69 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
   });
   return found;
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// FUNCTIONS FOR MOTHER /////////////////////////////////////////////////
 
-module.exports.writeDataInMother = (results, motherWorksheet) => {
+module.exports.groupItemNumbersByFormula = worksheetRead => {
+  let formulaCol = worksheetRead.getColumn("A");
+  let itemNumberCol = worksheetRead.getColumn("C");
+  let formulaSelected = formulaCol.values[2].result;
+  let itemNumbersArray = [];
+  let arrayOfGroupedObjects = [];
+
+  for (let i = 2; i < formulaCol.values.length; i++) {
+    if (formulaCol.values[i].result !== formulaSelected) {
+      //meter este grup en el array de grupos
+      arrayOfGroupedObjects.push({
+        formula: formulaSelected,
+        itemNumbersArray
+      });
+      //start with the next formula
+      formulaSelected = formulaCol.values[i].result;
+      itemNumbersArray = [];
+      itemNumbersArray.push(itemNumberCol.values[i]);
+    } else {
+      itemNumbersArray.push(itemNumberCol.values[i]);
+    }
+  }
+  return arrayOfGroupedObjects;
+};
+
+module.exports.writeDataInMother = (results, worksheetWrite) => {
   // E stokquantity F lot G exp H bin
-  var stockQuantityCol = motherWorksheet.getColumn("E");
-  var lotCol  = motherWorksheet.getColumn('F');
-  var expCol = motherWorksheet.getColumn('G');
-  var binCol = motherWorksheet.getColumn('H');
-  var itemNumberCol = motherWorksheet.getColumn('C');
-  
-  let done = results.map((resultado, index) => {
+  worksheetWrite.columns = [
+    { header: "Item Number", key: "itemNumber", width: 20 },
+    { header: "Stock Quantity", key: "stockQuantity", width: 20 },
+    { header: "Lot", key: "lot", width: 20 },
+    { header: "Exp", key: "exp", width: 20 },
+    { header: "Bin", key: "bin", width: 20 }
+  ];
+
+  results.map((resultado, index) => {
     if (resultado.length > 0) {
       //hay datos q meter
-      rowNumberToWrite=0;
+      rowNumberToWrite = 0;
       resultado.forEach(element => {
-        itemNumberCol.values.forEach((ItemNumVal,itemNumIndex)=>{
-          if(ItemNumVal ===element.itemNumber){
-            rowNumberToWrite = itemNumIndex;
-          }
-        });
-        if (resultado[0].error) {
-          //ponemos el error en todas las columnas
+        // Add a couple of Rows by key-value, after the last current row, using the column keys
+
+        if (element.error) {
+          //ponemos el error
+          let rowToWrite = worksheetWrite.addRow({ itemNumber: element.error });
+          rowToWrite.commit();
         } else {
           //escribimos los datos
-          //MIRAR SI VA ESTO Q NO PARECE
-          // ALOMEJOR hacerlo con la row directo q x columnas no parece q marche el getCelL
-          stockQuantityCol.getCell(rowNumberToWrite) = element.stockQuantity
-          // lot: lotCol.values[i].result,
-          // expirationDate: expCol.values[i].result,
-          // binLocation
-  
+          let rowToWrite = worksheetWrite.addRow({
+            itemNumber: element.itemNumber,
+            stockQuantity: element.stockQuantity,
+            lot: element.lot,
+            exp: element.expirationDate,
+            bin: element.binLocation
+          });
+          rowToWrite.commit();
         }
       });
     } else {
       //no habia datos diferentes a 0
     }
   });
-  return 1;
 };

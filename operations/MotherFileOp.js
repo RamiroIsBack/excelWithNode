@@ -4,33 +4,17 @@ var getDataFromFileChild = require("./ChildFileOp.js").getDataFromFileChild;
 var helpingFunctions = require("./HelpingFunctions.js");
 
 module.exports.readingMotherFile = documentList => {
-  var workbook = new Excel.Workbook();
-  workbook.xlsx
+  var workbookRead = new Excel.Workbook();
+  console.log("... start data processing ...");
+  workbookRead.xlsx
     .readFile("./files/Stock Loading-Inter and FG.xlsx")
     .then(function() {
-      console.log("pass mother");
-      var worksheet = workbook.getWorksheet("Stock Detailed");
-      var formulaCol = worksheet.getColumn("A");
-      var itemNumberCol = worksheet.getColumn("C");
-      var formulaSelected = formulaCol.values[2].result;
-      var itemNumbersArray = [];
-      var arrayOfGroupedObjects = [];
-      var dataFromChildFile = {};
-      for (let i = 2; i < formulaCol.values.length; i++) {
-        if (formulaCol.values[i].result !== formulaSelected) {
-          //meter este grup en el array de grupos
-          arrayOfGroupedObjects.push({
-            formula: formulaSelected,
-            itemNumbersArray
-          });
-          //start with the next formula
-          formulaSelected = formulaCol.values[i].result;
-          itemNumbersArray = [];
-          itemNumbersArray.push(itemNumberCol.values[i]);
-        } else {
-          itemNumbersArray.push(itemNumberCol.values[i]);
-        }
-      }
+      var worksheetRead = workbookRead.getWorksheet("Stock Detailed");
+      var arrayOfGroupedObjects = helpingFunctions.groupItemNumbersByFormula(
+        worksheetRead
+      );
+
+      console.log("... creating document ...");
       //hacer un mapeado async de cada uno de los blokes
       mapSeries(
         arrayOfGroupedObjects,
@@ -48,8 +32,25 @@ module.exports.readingMotherFile = documentList => {
         function(err, results) {
           if (err) console.log(err); //TODO::: somenthing more??
           //results will be an array of objects
-          helpingFunctions.writeDataInMother(results, worksheet);
+          writeData(results);
         }
       );
+    })
+    .catch(error => {
+      console.log(error);
     });
+};
+
+var writeData = results => {
+  var workbookWrite = new Excel.Workbook();
+  // create new sheet with pageSetup settings for A4 - landscape
+  var worksheetWrite = workbookWrite.addWorksheet("sheet", {
+    pageSetup: { paperSize: 9, orientation: "landscape" }
+  });
+  helpingFunctions.writeDataInMother(results, worksheetWrite);
+  let resultFile = "./files/results Stock L-I and FG.xlsx";
+  workbookWrite.xlsx.writeFile(resultFile).then(function() {
+    console.log(`... done ...
+      result file: ${resultFile}`);
+  });
 };
