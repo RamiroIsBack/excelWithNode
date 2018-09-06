@@ -18,13 +18,24 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
   var found = "";
   rowFindTypeForBin = binWorkSheet.getRow(5);
   rowForBinLocation = binWorkSheet.getRow(4);
+  rowForBinLocationSecundary = binWorkSheet.getRow(3);
   rowFindTypeForBin.values.forEach((val, i) => {
     if (val) {
       if (val.toString().trim() === typeForBin.toString().trim()) {
         found = rowForBinLocation.values[i];
+        if (found === "" || found === undefined) {
+          found = rowForBinLocationSecundary.values[i];
+          if (found === "" || found === undefined) {
+            found = "not found";
+          }
+        }
       }
     }
   });
+  if (found === "") {
+    found =
+      "no corresponde el tipo del inventoryMaster con ningun campo tipo de la linea 5 de la hoja correspondiente";
+  }
   return found;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,9 +43,10 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
 
 module.exports.groupItemNumbersByFormula = worksheetRead => {
   let formulaCol = worksheetRead.getColumn("A");
+  let identificationCol = worksheetRead.getColumn("B");
   let itemNumberCol = worksheetRead.getColumn("C");
   let formulaSelected = formulaCol.values[2].result;
-  let itemNumbersArray = [];
+  let itemsArray = [];
   let arrayOfGroupedObjects = [];
 
   for (let i = 2; i < formulaCol.values.length; i++) {
@@ -42,14 +54,26 @@ module.exports.groupItemNumbersByFormula = worksheetRead => {
       //meter este grup en el array de grupos
       arrayOfGroupedObjects.push({
         formula: formulaSelected,
-        itemNumbersArray
+        itemsArray
       });
       //start with the next formula
       formulaSelected = formulaCol.values[i].result;
-      itemNumbersArray = [];
-      itemNumbersArray.push(itemNumberCol.values[i]);
+      itemsArray = [];
+      itemsArray.push({
+        itemNumber: itemNumberCol.values[i],
+        identification: identificationCol.values[i].result
+          ? identificationCol.values[i].result
+          : identificationCol.values[i],
+        formula: formulaSelected
+      });
     } else {
-      itemNumbersArray.push(itemNumberCol.values[i]);
+      itemsArray.push({
+        itemNumber: itemNumberCol.values[i],
+        identification: identificationCol.values[i].result
+          ? identificationCol.values[i].result
+          : identificationCol.values[i],
+        formula: formulaSelected
+      });
     }
   }
   return arrayOfGroupedObjects;
@@ -58,6 +82,8 @@ module.exports.groupItemNumbersByFormula = worksheetRead => {
 module.exports.writeDataInMother = (results, worksheetWrite) => {
   // E stokquantity F lot G exp H bin
   worksheetWrite.columns = [
+    { header: "Formula", key: "formula", width: 20 },
+    { header: "Identification", key: "identification", width: 20 },
     { header: "Item Number", key: "itemNumber", width: 20 },
     { header: "Stock Quantity", key: "stockQuantity", width: 20 },
     { header: "Lot", key: "lot", width: 20 },
@@ -79,6 +105,8 @@ module.exports.writeDataInMother = (results, worksheetWrite) => {
         } else {
           //escribimos los datos
           let rowToWrite = worksheetWrite.addRow({
+            formula: element.formula,
+            identification: element.identification,
             itemNumber: element.itemNumber,
             stockQuantity: element.stockQuantity,
             lot: element.lot,

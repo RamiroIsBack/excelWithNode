@@ -5,7 +5,7 @@ var helpingFunctions = require("./HelpingFunctions");
 
 module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
   //open child document based on formula
-  var dirPath = "./files/"; //directory path
+  var dirPath = "../filesForExcell/"; //directory path
   var file = "";
   //will return an array of objects with all the data required
   var dataToSendBack = [];
@@ -16,7 +16,7 @@ module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
       documentList[i].indexOf(" ")
     );
     if (formulaPartOfName === formulaGroupObject.formula) {
-      file = `./files/${documentList[i].trim()}`;
+      file = `../filesForExcell/${documentList[i].trim()}`;
       break;
     }
   }
@@ -55,12 +55,17 @@ const getData = (workbookChild, formulaGroupObject) => {
   row.values.forEach((itemNum, rowIndex) => {
     if (itemNum) {
       var itemNumber = null;
-      formulaGroupObject.itemNumbersArray.forEach(
-        (itemNumFromMother, colFromMotherIdex) => {
+      var identification = null;
+      var formula = null;
+      formulaGroupObject.itemsArray.forEach(
+        (itemFromMother, colFromMotherIdex) => {
           if (
-            itemNumFromMother.toString().trim() === itemNum.toString().trim()
+            itemFromMother.itemNumber.toString().trim() ===
+            itemNum.toString().trim()
           ) {
             itemNumber = itemNum.toString().trim();
+            identification = itemFromMother.identification;
+            formula = itemFromMother.formula;
           }
         }
       );
@@ -90,10 +95,10 @@ const getData = (workbookChild, formulaGroupObject) => {
                   binWorkSheet,
                   typeForBin
                 );
-                if (binLocation === "" || binLocation === undefined) {
-                  binLocation = "not found";
-                }
+
                 arrayOfDataFromChildObjects.push({
+                  formula,
+                  identification,
                   itemNumber,
                   stockQuantity: matchingElementCol.values[i].result,
                   lot: lotCol.values[i].result,

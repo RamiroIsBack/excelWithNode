@@ -7,7 +7,7 @@ module.exports.readingMotherFile = documentList => {
   var workbookRead = new Excel.Workbook();
   console.log("... start data processing ...");
   workbookRead.xlsx
-    .readFile("./files/Stock Loading-Inter and FG.xlsx")
+    .readFile("../filesForExcell/Stock Loading-Inter and FG.xlsx")
     .then(function() {
       var worksheetRead = workbookRead.getWorksheet("Stock Detailed");
       var arrayOfGroupedObjects = helpingFunctions.groupItemNumbersByFormula(
@@ -48,7 +48,7 @@ var writeData = results => {
     pageSetup: { paperSize: 9, orientation: "landscape" }
   });
   helpingFunctions.writeDataInMother(results, worksheetWrite);
-  let resultFile = "./files/results Stock L-I and FG.xlsx";
+  let resultFile = "../filesForExcell/results Stock L-I and FG.xlsx";
   workbookWrite.xlsx.writeFile(resultFile).then(function() {
     console.log(`... done ...
       result file: ${resultFile}`);
