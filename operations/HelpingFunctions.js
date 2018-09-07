@@ -40,6 +40,10 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// FUNCTIONS FOR MOTHER /////////////////////////////////////////////////
+module.exports.getPath = () => {
+  let path = "../filesForExcell/";
+  return path;
+};
 
 module.exports.groupItemNumbersByFormula = worksheetRead => {
   let formulaCol = worksheetRead.getColumn("A");
