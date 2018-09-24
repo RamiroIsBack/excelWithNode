@@ -50,7 +50,7 @@ var writeData = (results, dirPath) => {
     pageSetup: { paperSize: 9, orientation: "landscape" }
   });
   helpingFunctions.writeDataInMother(results, worksheetWrite);
-  let resultFile = `${dirPath}results Stock L-I and FG.xlsx`;
+  let resultFile = `./results Stock L-I and FG.xlsx`;
   workbookWrite.xlsx.writeFile(resultFile).then(function() {
     console.log(`... done ...
       result file: ${resultFile}`);

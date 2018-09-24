@@ -5,7 +5,7 @@ var helpingFunctions = require("./HelpingFunctions");
 
 module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
   //open child document based on formula
-  var dirPath = "../filesForExcell/"; //directory path
+  var dirPath = helpingFunctions.getPath(); //directory path
   var file = "";
   //will return an array of objects with all the data required
   var dataToSendBack = [];
@@ -16,7 +16,7 @@ module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
       documentList[i].indexOf(" ")
     );
     if (formulaPartOfName === formulaGroupObject.formula) {
-      file = `../filesForExcell/${documentList[i].trim()}`;
+      file = `${dirPath}${documentList[i].trim()}`;
       break;
     }
   }
@@ -52,24 +52,30 @@ const getData = (workbookChild, formulaGroupObject) => {
 
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
+
   row.values.forEach((itemNum, rowIndex) => {
     if (itemNum) {
       var itemNumber = null;
       var identification = null;
       var formula = null;
-      formulaGroupObject.itemsArray.forEach(
-        (itemFromMother, colFromMotherIdex) => {
-          if (
-            itemFromMother.itemNumber.toString().trim() ===
-            itemNum.toString().trim()
-          ) {
-            itemNumber = itemNum.toString().trim();
-            identification = itemFromMother.identification;
-            formula = itemFromMother.formula;
+      if (itemNum.toString().trim() === "?") {
+        formula = formulaGroupObject.formula;
+      } else {
+        formulaGroupObject.itemsArray.forEach(
+          (itemFromMother, colFromMotherIdex) => {
+            if (
+              itemFromMother.itemNumber.toString().trim() ===
+              itemNum.toString().trim()
+            ) {
+              itemNumber = itemNum.toString().trim();
+              identification = itemFromMother.identification;
+              formula = itemFromMother.formula;
+            }
           }
-        }
-      );
-      if (itemNumber !== null) {
+        );
+      }
+
+      if (itemNumber !== null || itemNum === "?") {
         // there is a coincidence in child
         var matchingElementCol = inventoryWorksheet.getColumn(rowIndex); //getting col for quantity
         var lotCol = inventoryWorksheet.getColumn("A"); //getting col for lot
@@ -80,6 +86,8 @@ const getData = (workbookChild, formulaGroupObject) => {
         var typeForBin = matchingElementCol.values[4];
         for (let i = 5; i < matchingElementCol.values.length; i++) {
           if (matchingElementCol.values[i]) {
+            //don't do ternary operator here cos it gets the object instead of .result
+            //not so sure why so better to get undefined than make it all work weird
             let unitNumberInStock = matchingElementCol.values[i].result;
             if (unitNumberInStock !== 0) {
               //exclude last row with total amount
@@ -88,13 +96,19 @@ const getData = (workbookChild, formulaGroupObject) => {
                 : lotCol.values[i].toString();
               if (lotNotTotals.toLowerCase() !== "totals") {
                 //this is the line to get the data from
-                let binWorkSheet = workbookChild.getWorksheet(
-                  lotCol.values[i].result.toString()
-                );
-                let binLocation = helpingFunctions.getBinLocation(
-                  binWorkSheet,
-                  typeForBin
-                );
+                let binLocation = "?";
+                if (itemNum === "?") {
+                  itemNumber = "?";
+                  identification = "?";
+                } else {
+                  let binWorkSheet = workbookChild.getWorksheet(
+                    lotCol.values[i].result.toString()
+                  );
+                  binLocation = helpingFunctions.getBinLocation(
+                    binWorkSheet,
+                    typeForBin
+                  );
+                }
 
                 arrayOfDataFromChildObjects.push({
                   formula,
