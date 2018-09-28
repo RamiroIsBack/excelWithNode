@@ -117,7 +117,8 @@ const getData = (workbookChild, formulaGroupObject) => {
                   stockQuantity: matchingElementCol.values[i].result,
                   lot: lotCol.values[i].result,
                   expirationDate: expCol.values[i].result,
-                  binLocation
+                  binLocation,
+                  typeForBin
                 });
               } else {
                 break; // there is no more usefull data

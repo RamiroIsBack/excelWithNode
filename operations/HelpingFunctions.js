@@ -91,7 +91,8 @@ module.exports.writeDataInMother = (results, worksheetWrite) => {
     { header: "Stock Quantity", key: "stockQuantity", width: 20 },
     { header: "Lot", key: "lot", width: 20 },
     { header: "Exp", key: "exp", width: 20 },
-    { header: "Bin", key: "bin", width: 20 }
+    { header: "Bin", key: "bin", width: 20 },
+    { header: "Type for Bin", key: "typeForBin", width: 20 }
   ];
 
   results.map((resultado, index) => {
@@ -114,7 +115,8 @@ module.exports.writeDataInMother = (results, worksheetWrite) => {
             stockQuantity: element.stockQuantity,
             lot: element.lot,
             exp: element.expirationDate,
-            bin: element.binLocation
+            bin: element.binLocation,
+            typeForBin: element.typeForBin
           });
           rowToWrite.commit();
         }
