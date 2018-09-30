@@ -56,28 +56,30 @@ module.exports.groupItemNumbersByFormula = worksheetRead => {
   let arrayOfGroupedObjects = [];
 
   for (let i = 2; i < formulaCol.values.length; i++) {
-    let formulaColDependingOnIndex = formulaCol.values[i].result
+    if(formulaCol.values[i]){
+      let formulaColDependingOnIndex = formulaCol.values[i].result
       ? formulaCol.values[i].result
       : formulaCol.values[i];
-    if (formulaColDependingOnIndex !== formulaSelected) {
-      //meter este grup en el array de grupos
-      arrayOfGroupedObjects.push({
-        formula: formulaSelected,
-        itemsArray
+      if (formulaColDependingOnIndex !== formulaSelected) {
+        //meter este grup en el array de grupos
+        arrayOfGroupedObjects.push({
+          formula: formulaSelected,
+          itemsArray
+        });
+        //start with the next formula
+        formulaSelected = formulaColDependingOnIndex;
+        itemsArray = [];
+      }
+      itemsArray.push({
+        itemNumber: itemNumberCol.values[i].result
+          ? itemNumberCol.values[i].result
+          : itemNumberCol.values[i],
+        identification: identificationCol.values[i].result
+          ? identificationCol.values[i].result
+          : identificationCol.values[i],
+        formula: formulaSelected
       });
-      //start with the next formula
-      formulaSelected = formulaColDependingOnIndex;
-      itemsArray = [];
     }
-    itemsArray.push({
-      itemNumber: itemNumberCol.values[i].result
-        ? itemNumberCol.values[i].result
-        : itemNumberCol.values[i],
-      identification: identificationCol.values[i].result
-        ? identificationCol.values[i].result
-        : identificationCol.values[i],
-      formula: formulaSelected
-    });
   }
   return arrayOfGroupedObjects;
 };
