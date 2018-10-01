@@ -40,7 +40,14 @@ module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
         ];
         return dataToSendBack;
       } else {
-        return error;
+        dataToSendBack = [
+          {
+            error: `error: ${error.message} ${
+              formulaGroupObject.formula
+            }`
+          }
+        ];
+        return dataToSendBack;
       }
     });
 };
@@ -53,7 +60,8 @@ const getData = (workbookChild, formulaGroupObject) => {
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
 
-  row.values.forEach((itemNum, rowIndex) => {
+  for (let rowIndex = 1 ; rowIndex<100 ;rowIndex++){
+    var itemNum = row.values[rowIndex];
     if (itemNum) {
       var itemNumber = null;
       var identification = null;
@@ -84,50 +92,52 @@ const getData = (workbookChild, formulaGroupObject) => {
             ? "expedition-date column not found"
             : inventoryWorksheet.getColumn(expColNumber);
         var typeForBin = matchingElementCol.values[4];
+        var lotNotTotals = '';
         for (let i = 5; i < matchingElementCol.values.length; i++) {
           if (matchingElementCol.values[i]) {
-            //don't do ternary operator here cos it gets the object instead of .result
-            //not so sure why so better to get undefined than make it all work weird
-            let unitNumberInStock = matchingElementCol.values[i].result;
-            if (unitNumberInStock !== 0) {
+            if(lotCol.values[i]){
+              lotNotTotals = lotCol.values[i].result
+              ? lotCol.values[i].result.toString()
+              : lotCol.values[i].toString();
               //exclude last row with total amount
-              let lotNotTotals = lotCol.values[i].result
-                ? lotCol.values[i].result.toString()
-                : lotCol.values[i].toString();
-              if (lotNotTotals.toLowerCase() !== "totals") {
-                //this is the line to get the data from
-                let binLocation = "?";
-                if (itemNum === "?") {
-                  itemNumber = "?";
-                  identification = "?";
-                } else {
-                  let binWorkSheet = workbookChild.getWorksheet(
-                    lotCol.values[i].result.toString()
-                  );
-                  binLocation = helpingFunctions.getBinLocation(
-                    binWorkSheet,
-                    typeForBin
-                  );
-                }
-
-                arrayOfDataFromChildObjects.push({
-                  formula,
-                  identification,
-                  itemNumber,
-                  stockQuantity: matchingElementCol.values[i].result,
-                  lot: lotCol.values[i].result,
-                  expirationDate: expCol.values[i].result,
-                  binLocation,
-                  typeForBin
-                });
-              } else {
+              if (lotNotTotals.toLowerCase() === "totals") {
                 break; // there is no more usefull data
               }
+            }
+            let unitNumberInStock = matchingElementCol.values[i].result;
+            if (unitNumberInStock !== 0 && unitNumberInStock !== undefined) {
+              
+              //this is the line to get the data from
+              let binLocation = "?";
+              if (itemNum === "?") {
+                itemNumber = "?";
+                identification = "?";
+              } else {
+                let binWorkSheet = workbookChild.getWorksheet(
+                  lotNotTotals
+                );
+                binLocation = helpingFunctions.getBinLocation(
+                  binWorkSheet,
+                  typeForBin
+                );
+              }
+
+              arrayOfDataFromChildObjects.push({
+                formula,
+                identification,
+                itemNumber,
+                stockQuantity: unitNumberInStock,
+                lot: lotNotTotals,
+                expirationDate: expCol.values[i].result,
+                binLocation,
+                typeForBin
+              });
+              
             }
           }
         }
       }
     }
-  });
+  }
   return arrayOfDataFromChildObjects;
 };

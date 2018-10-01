@@ -3,14 +3,19 @@
 
 module.exports.getExpeditionsColumn = rowToFindExp => {
   var found = 0;
-  rowToFindExp.values.forEach((val, i) => {
-    var expPart = val.result.toString();
-    expPart = expPart.substr(0, 3).toLowerCase();
-    if (expPart === "exp" || expPart === "inv") {
-      found = i;
+  for (let i=2 ; i<100; i++){
+    val = rowToFindExp.values[i];
+    if(val){
+      if(val.result){
+        var expPart = val.result.toString();
+        expPart = expPart.substr(0, 3).toLowerCase();
+        if (expPart === "exp" || expPart === "inv") {
+          found = i;
+          break;
+        }
+      }
     }
-  });
-
+  }
   return found;
 };
 
