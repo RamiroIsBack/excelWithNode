@@ -42,9 +42,7 @@ module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
       } else {
         dataToSendBack = [
           {
-            error: `error: ${error.message} ${
-              formulaGroupObject.formula
-            }`
+            error: `error: ${error.message} ${formulaGroupObject.formula}`
           }
         ];
         return dataToSendBack;
@@ -54,13 +52,21 @@ module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
 
 const getData = (workbookChild, formulaGroupObject) => {
   var inventoryWorksheet = workbookChild.getWorksheet("Inventory Master");
+
+  if (!inventoryWorksheet) {
+    throw new Error(
+      `${
+        formulaGroupObject.formula
+      } en el xls con esa formula no hay Inventory Master`
+    );
+  }
   var rowToFindExp = inventoryWorksheet.getRow(5);
   var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
 
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
 
-  for (let rowIndex = 1 ; rowIndex<100 ;rowIndex++){
+  for (let rowIndex = 1; rowIndex < 100; rowIndex++) {
     var itemNum = row.values[rowIndex];
     if (itemNum) {
       var itemNumber = null;
@@ -92,13 +98,13 @@ const getData = (workbookChild, formulaGroupObject) => {
             ? "expedition-date column not found"
             : inventoryWorksheet.getColumn(expColNumber);
         var typeForBin = matchingElementCol.values[4];
-        var lotNotTotals = '';
+        var lotNotTotals = "";
         for (let i = 5; i < matchingElementCol.values.length; i++) {
           if (matchingElementCol.values[i]) {
-            if(lotCol.values[i]){
+            if (lotCol.values[i]) {
               lotNotTotals = lotCol.values[i].result
-              ? lotCol.values[i].result.toString()
-              : lotCol.values[i].toString();
+                ? lotCol.values[i].result.toString()
+                : lotCol.values[i].toString();
               //exclude last row with total amount
               if (lotNotTotals.toLowerCase() === "totals") {
                 break; // there is no more usefull data
@@ -106,20 +112,21 @@ const getData = (workbookChild, formulaGroupObject) => {
             }
             let unitNumberInStock = matchingElementCol.values[i].result;
             if (unitNumberInStock !== 0 && unitNumberInStock !== undefined) {
-              
               //this is the line to get the data from
               let binLocation = "?";
               if (itemNum === "?") {
                 itemNumber = "?";
                 identification = "?";
               } else {
-                let binWorkSheet = workbookChild.getWorksheet(
-                  lotNotTotals
-                );
-                binLocation = helpingFunctions.getBinLocation(
-                  binWorkSheet,
-                  typeForBin
-                );
+                let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
+                if (!binWorkSheet) {
+                  binLocation = `${lotNotTotals} there is no corresponding worksheet for this lotNumber`;
+                } else {
+                  binLocation = helpingFunctions.getBinLocation(
+                    binWorkSheet,
+                    typeForBin
+                  );
+                }
               }
 
               arrayOfDataFromChildObjects.push({
@@ -132,7 +139,6 @@ const getData = (workbookChild, formulaGroupObject) => {
                 binLocation,
                 typeForBin
               });
-              
             }
           }
         }
