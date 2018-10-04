@@ -7,7 +7,10 @@ module.exports.readingMotherFile = documentList => {
   var workbookRead = new Excel.Workbook();
   console.log("... start data processing ...");
   var dirPath = helpingFunctions.getPath(); //directory path
-
+  //erase the folder containing the program and Stock Loading-Inter and FG.xlsx
+  documentList = documentList.filter(
+    doc => doc !== "excelWithNode" && doc !== "Stock Loading-Inter and FG.xlsx"
+  );
   workbookRead.xlsx
     .readFile(`${dirPath}Stock Loading-Inter and FG.xlsx`)
     .then(function() {
@@ -19,9 +22,9 @@ module.exports.readingMotherFile = documentList => {
       console.log("... creating document ...");
       //hacer un mapeado async de cada uno de los blokes
       mapSeries(
-        arrayOfGroupedObjects,
-        (formulaGroupObject, callback) => {
-          getDataFromFileChild(documentList, formulaGroupObject)
+        documentList,
+        (document, callback) => {
+          getDataFromFileChild(arrayOfGroupedObjects, document)
             .then(res => {
               callback(null, res);
             })

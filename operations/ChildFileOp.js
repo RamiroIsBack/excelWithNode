@@ -3,20 +3,17 @@ var fs = require("fs");
 
 var helpingFunctions = require("./HelpingFunctions");
 
-module.exports.getDataFromFileChild = (documentList, formulaGroupObject) => {
+module.exports.getDataFromFileChild = (arrayOfGroupedObjects, document) => {
   //open child document based on formula
   var dirPath = helpingFunctions.getPath(); //directory path
-  var file = "";
+  var file = `${dirPath}${document.trim()}`;
+  var formulaPartOfName = document.substr(0, document.indexOf(" "));
   //will return an array of objects with all the data required
   var dataToSendBack = [];
-
-  for (var i = 0; i < documentList.length; i++) {
-    var formulaPartOfName = documentList[i].substr(
-      0,
-      documentList[i].indexOf(" ")
-    );
+  var formulaGroupObject = {};
+  for (var i = 0; i < arrayOfGroupedObjects.length; i++) {
+    formulaGroupObject = arrayOfGroupedObjects[i];
     if (formulaPartOfName === formulaGroupObject.formula) {
-      file = `${dirPath}${documentList[i].trim()}`;
       break;
     }
   }
