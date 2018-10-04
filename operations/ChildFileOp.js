@@ -71,6 +71,8 @@ const getData = (workbookChild, formulaGroupObject) => {
       var formula = null;
       if (itemNum.toString().trim() === "?") {
         formula = formulaGroupObject.formula;
+        itemNumber = "?";
+        identification = "?";
       } else {
         formulaGroupObject.itemsArray.forEach(
           (itemFromMother, colFromMotherIdex) => {
@@ -106,21 +108,17 @@ const getData = (workbookChild, formulaGroupObject) => {
             let unitNumberInStock = matchingElementCol.values[i].result;
             if (unitNumberInStock !== 0 && unitNumberInStock !== undefined) {
               //this is the line to get the data from
-              let binLocation = "?";
-              if (itemNum === "?") {
-                itemNumber = "?";
-                identification = "?";
+              let binLocation = "";
+              let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
+              if (!binWorkSheet) {
+                binLocation = `${lotNotTotals} there is no corresponding worksheet for this lotNumber`;
               } else {
-                let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
-                if (!binWorkSheet) {
-                  binLocation = `${lotNotTotals} there is no corresponding worksheet for this lotNumber`;
-                } else {
-                  binLocation = helpingFunctions.getBinLocation(
-                    binWorkSheet,
-                    typeForBin
-                  );
-                }
+                binLocation = helpingFunctions.getBinLocation(
+                  binWorkSheet,
+                  typeForBin
+                );
               }
+
               let expirationDate = "";
               if (expColNumber === 0) {
                 expirationDate = "expedition-date column not found";
