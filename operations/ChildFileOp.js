@@ -93,10 +93,6 @@ const getData = (workbookChild, formulaGroupObject) => {
         // there is a coincidence in child
         var matchingElementCol = inventoryWorksheet.getColumn(rowIndex); //getting col for quantity
         var lotCol = inventoryWorksheet.getColumn("A"); //getting col for lot
-        var expCol =
-          expColNumber === 0
-            ? "expedition-date column not found"
-            : inventoryWorksheet.getColumn(expColNumber);
         var typeForBin = matchingElementCol.values[4];
         var lotNotTotals = "";
         for (let i = 5; i < matchingElementCol.values.length; i++) {
@@ -128,14 +124,26 @@ const getData = (workbookChild, formulaGroupObject) => {
                   );
                 }
               }
-
+              let expirationDate = "";
+              if (expColNumber === 0) {
+                expirationDate = "expedition-date column not found";
+              } else {
+                var expCol = inventoryWorksheet.getColumn(expColNumber);
+                if (expCol.values[i]) {
+                  expirationDate = expCol.values[i].result
+                    ? expCol.values[i].result
+                    : expCol.values[i];
+                } else {
+                  expirationDate = "expiration-date doesnt exist for this one";
+                }
+              }
               arrayOfDataFromChildObjects.push({
                 formula,
                 identification,
                 itemNumber,
                 stockQuantity: unitNumberInStock,
                 lot: lotNotTotals,
-                expirationDate: expCol.values[i].result,
+                expirationDate,
                 binLocation,
                 typeForBin
               });
