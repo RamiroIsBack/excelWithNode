@@ -1,49 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// FUNCTIONS FOR CHILD //////////////////////////////////////////////////
-
-module.exports.getExpeditionsColumn = rowToFindExp => {
-  var found = 0;
-  for (let i=2 ; i<100; i++){
-    val = rowToFindExp.values[i];
-    if(val){
-      if(val.result){
-        var expPart = val.result.toString();
-        expPart = expPart.substr(0, 3).toLowerCase();
-        if (expPart === "exp" || expPart === "inv") {
-          found = i;
-          break;
-        }
-      }
-    }
-  }
-  return found;
-};
-
-module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
-  var found = "";
-  rowFindTypeForBin = binWorkSheet.getRow(5);
-  rowForBinLocation = binWorkSheet.getRow(4);
-  rowForBinLocationSecundary = binWorkSheet.getRow(3);
-  rowFindTypeForBin.values.forEach((val, i) => {
-    if (val) {
-      if (val.toString().trim() === typeForBin.toString().trim()) {
-        found = rowForBinLocation.values[i];
-        if (found === "" || found === undefined) {
-          found = rowForBinLocationSecundary.values[i];
-          if (found === "" || found === undefined) {
-            found = "not found";
-          }
-        }
-      }
-    }
-  });
-  if (found === "") {
-    found =
-      "no corresponde el tipo del inventoryMaster con ningun campo tipo de la linea 5 de la hoja correspondiente";
-  }
-  return found;
-};
-////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// FUNCTIONS FOR MOTHER /////////////////////////////////////////////////
 module.exports.getPath = () => {
   let path = "../";
@@ -61,10 +16,10 @@ module.exports.groupItemNumbersByFormula = worksheetRead => {
   let arrayOfGroupedObjects = [];
 
   for (let i = 2; i < formulaCol.values.length; i++) {
-    if(formulaCol.values[i]){
+    if (formulaCol.values[i]) {
       let formulaColDependingOnIndex = formulaCol.values[i].result
-      ? formulaCol.values[i].result
-      : formulaCol.values[i];
+        ? formulaCol.values[i].result
+        : formulaCol.values[i];
       if (formulaColDependingOnIndex !== formulaSelected) {
         //meter este grup en el array de grupos
         arrayOfGroupedObjects.push({
@@ -132,4 +87,50 @@ module.exports.writeDataInMother = (results, worksheetWrite) => {
       //no habia datos diferentes a 0
     }
   });
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// FUNCTIONS FOR CHILD //////////////////////////////////////////////////
+
+module.exports.getExpeditionsColumn = rowToFindExp => {
+  var found = 0;
+  for (let i = 2; i < 100; i++) {
+    val = rowToFindExp.values[i];
+    if (val) {
+      if (val.result) {
+        var expPart = val.result.toString();
+        expPart = expPart.substr(0, 3).toLowerCase();
+        if (expPart === "exp" || expPart === "inv") {
+          found = i;
+          break;
+        }
+      }
+    }
+  }
+  return found;
+};
+
+module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
+  var found = "";
+  rowFindTypeForBin = binWorkSheet.getRow(5);
+  rowForBinLocation = binWorkSheet.getRow(4);
+  rowForBinLocationSecundary = binWorkSheet.getRow(3);
+  rowFindTypeForBin.values.forEach((val, i) => {
+    if (val) {
+      if (val.toString().trim() === typeForBin.toString().trim()) {
+        found = rowForBinLocation.values[i];
+        if (found === "" || found === undefined) {
+          found = rowForBinLocationSecundary.values[i];
+          if (found === "" || found === undefined) {
+            found = "not found";
+          }
+        }
+      }
+    }
+  });
+  if (found === "") {
+    found =
+      "no corresponde el tipo del inventoryMaster con ningun campo tipo de la linea 5 de la hoja correspondiente";
+  }
+  return found;
 };

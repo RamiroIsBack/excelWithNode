@@ -9,7 +9,9 @@ module.exports.readingMotherFile = documentList => {
   var dirPath = helpingFunctions.getPath(); //directory path
   //erase the folder containing the program and Stock Loading-Inter and FG.xlsx
   documentList = documentList.filter(
-    doc => doc !== "excelWithNode" && doc !== "Stock Loading-Inter and FG.xlsx"
+    doc =>
+      doc !== "Stock Loading-Inter and FG.xlsx" &&
+      doc.substring(doc.length - 5) === ".xlsx"
   );
   workbookRead.xlsx
     .readFile(`${dirPath}Stock Loading-Inter and FG.xlsx`)
