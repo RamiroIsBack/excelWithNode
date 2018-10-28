@@ -54,7 +54,7 @@ const getData = (workbookChild, formulaGroupObject) => {
     throw new Error(
       `${
         formulaGroupObject.formula
-      } there is no Inventory Master sheet with this formula in hte .xlsx file`
+      } there is no Inventory Master sheet with this formula in the .xlsx file`
     );
   }
    
@@ -112,6 +112,10 @@ const getData = (workbookChild, formulaGroupObject) => {
               var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
               
               let binLocation = "";
+              //lotNotTotals contained in the worksheet name => open worksheet not force error
+//
+//
+//
               let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
               if (!binWorkSheet) {
                 binLocation = `${lotNotTotals} there is no corresponding worksheet for this lotNumber`;
