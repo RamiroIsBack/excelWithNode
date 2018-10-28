@@ -30,7 +30,7 @@ module.exports.getDataFromFileChild = (arrayOfGroupedObjects, document) => {
       if (file === "") {
         dataToSendBack = [
           {
-            error: `no se ha encontrado archivo de donde sacar datos para la formula: ${
+            error: ` there is no file for this formula to get the data from: ${
               formulaGroupObject.formula
             }`
           }
@@ -54,7 +54,7 @@ const getData = (workbookChild, formulaGroupObject) => {
     throw new Error(
       `${
         formulaGroupObject.formula
-      } en el xls con esa formula no hay Inventory Master`
+      } there is no Inventory Master sheet with this formula in hte .xlsx file`
     );
   }
    
@@ -107,7 +107,7 @@ const getData = (workbookChild, formulaGroupObject) => {
             let unitNumberInStock = matchingElementCol.values[i].result;
             if (unitNumberInStock !== 0 && unitNumberInStock !== undefined) {
               //this is the line to get the data from
-              
+
               var rowToFindExp = inventoryWorksheet.getRow(i);
               var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
               
@@ -135,6 +135,7 @@ const getData = (workbookChild, formulaGroupObject) => {
                   expirationDate = "expiration-date doesnt exist for this one";
                 }
               }
+              
               arrayOfDataFromChildObjects.push({
                 formula,
                 identification,

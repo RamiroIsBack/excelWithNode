@@ -142,7 +142,7 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
   // });
   if (found === "") {
     found =
-      "no corresponde el tipo del inventoryMaster con ningun campo tipo de la linea 5 de la hoja correspondiente";
+      "There is no match between inventory Master Type for bin and any type in line 5 of the corresponding sheet";
   }
   return found;
 };
