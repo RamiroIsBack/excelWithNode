@@ -115,16 +115,17 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
   rowFindTypeForBin = binWorkSheet.getRow(5);
   rowForBinLocation = binWorkSheet.getRow(4);
   rowForBinLocationSecundary = binWorkSheet.getRow(3);
-  rowFindTypeForBin.values.forEach((val, i) => {
-    let noSpacesOrLineBreaksVal = val
-      .toString()
-      .toLowerCase()
-      .replace(/\s/g, "");
-    let noSpacesOrLineBreaksTypeForBin = typeForBin
-      .toString()
-      .toLowerCase()
-      .replace(/\s/g, "");
-    if (val) {
+  for (let i=1 ;i< rowFindTypeForBin.values.length ; i++){
+    let val = rowFindTypeForBin.values[i];
+    if (val && val !== undefined) {
+      let noSpacesOrLineBreaksVal = val
+        .toString()
+        .toLowerCase()
+        .replace(/\s/g, "");
+      let noSpacesOrLineBreaksTypeForBin = typeForBin
+        .toString()
+        .toLowerCase()
+        .replace(/\s/g, "");
       if (noSpacesOrLineBreaksTypeForBin === noSpacesOrLineBreaksVal) {
         found = rowForBinLocation.values[i];
         if (found === "" || found === undefined) {
@@ -133,9 +134,12 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
             found = "not found";
           }
         }
+        break;
       }
     }
-  });
+  }
+  // rowFindTypeForBin.values.forEach((val, i) => {
+  // });
   if (found === "") {
     found =
       "no corresponde el tipo del inventoryMaster con ningun campo tipo de la linea 5 de la hoja correspondiente";

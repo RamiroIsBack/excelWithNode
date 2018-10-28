@@ -57,8 +57,7 @@ const getData = (workbookChild, formulaGroupObject) => {
       } en el xls con esa formula no hay Inventory Master`
     );
   }
-  var rowToFindExp = inventoryWorksheet.getRow(5);
-  var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
+   
 
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
@@ -108,6 +107,10 @@ const getData = (workbookChild, formulaGroupObject) => {
             let unitNumberInStock = matchingElementCol.values[i].result;
             if (unitNumberInStock !== 0 && unitNumberInStock !== undefined) {
               //this is the line to get the data from
+              
+              var rowToFindExp = inventoryWorksheet.getRow(i);
+              var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
+              
               let binLocation = "";
               let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
               if (!binWorkSheet) {
