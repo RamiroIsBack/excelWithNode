@@ -14,7 +14,7 @@ module.exports.readingMotherFile = documentList => {
       doc.substring(doc.length - 5) === ".xlsx"
   );
   workbookRead.xlsx
-    .readFile(`${dirPath}Stock Loading-Inter and FG.xlsx`)
+    .readFile(`./Stock Loading-Inter and FG.xlsx`)
     .then(function() {
       var worksheetRead = workbookRead.getWorksheet("Stock Detailed");
       var arrayOfGroupedObjects = helpingFunctions.groupItemNumbersByFormula(
