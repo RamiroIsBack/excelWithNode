@@ -116,8 +116,16 @@ module.exports.getBinLocation = (binWorkSheet, typeForBin) => {
   rowForBinLocation = binWorkSheet.getRow(4);
   rowForBinLocationSecundary = binWorkSheet.getRow(3);
   rowFindTypeForBin.values.forEach((val, i) => {
+    let noSpacesOrLineBreaksVal = val
+      .toString()
+      .toLowerCase()
+      .replace(/\s/g, "");
+    let noSpacesOrLineBreaksTypeForBin = typeForBin
+      .toString()
+      .toLowerCase()
+      .replace(/\s/g, "");
     if (val) {
-      if (val.toString().trim() === typeForBin.toString().trim()) {
+      if (noSpacesOrLineBreaksTypeForBin === noSpacesOrLineBreaksVal) {
         found = rowForBinLocation.values[i];
         if (found === "" || found === undefined) {
           found = rowForBinLocationSecundary.values[i];
