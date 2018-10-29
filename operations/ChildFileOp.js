@@ -57,7 +57,6 @@ const getData = (workbookChild, formulaGroupObject) => {
       } there is no Inventory Master sheet with this formula in the .xlsx file`
     );
   }
-   
 
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
@@ -109,14 +108,44 @@ const getData = (workbookChild, formulaGroupObject) => {
               //this is the line to get the data from
 
               var rowToFindExp = inventoryWorksheet.getRow(i);
-              var expColNumber = helpingFunctions.getExpeditionsColumn(rowToFindExp);
-              
+              var expColNumber = helpingFunctions.getExpeditionsColumn(
+                rowToFindExp
+              );
+
               let binLocation = "";
               //lotNotTotals contained in the worksheet name => open worksheet not force error
-//
-//
-//
-              let binWorkSheet = workbookChild.getWorksheet(lotNotTotals);
+              let sheetNameForBin = "";
+              for (let i = 0; i < workbookChild._worksheets.length; i++) {
+                if (workbookChild._worksheets[i]) {
+                  let sheet = workbookChild._worksheets[i];
+
+                  if (
+                    sheet.name.trim() === lotNotTotals.trim() ||
+                    sheet.name.includes(lotNotTotals.trim())
+                  ) {
+                    sheetNameForBin = sheet.name;
+                    break;
+                  }
+                }
+              }
+              if (sheetNameForBin === "") {
+                for (let i = 0; i < workbookChild._worksheets.length; i++) {
+                  if (workbookChild._worksheets[i]) {
+                    let sheet = workbookChild._worksheets[i];
+                    let firstPartOfLotNotTotals = lotNotTotals
+                      .trim()
+                      .substring(0, lotNotTotals.indexOf(" "));
+                    if (
+                      firstPartOfLotNotTotals.length > 4 &&
+                      sheet.name.includes(firstPartOfLotNotTotals)
+                    ) {
+                      sheetNameForBin = sheet.name;
+                      break;
+                    }
+                  }
+                }
+              }
+              let binWorkSheet = workbookChild.getWorksheet(sheetNameForBin);
               if (!binWorkSheet) {
                 binLocation = `${lotNotTotals} there is no corresponding worksheet for this lotNumber`;
               } else {
@@ -139,7 +168,7 @@ const getData = (workbookChild, formulaGroupObject) => {
                   expirationDate = "expiration-date doesnt exist for this one";
                 }
               }
-              
+
               arrayOfDataFromChildObjects.push({
                 formula,
                 identification,
