@@ -31,7 +31,7 @@ module.exports.getDataFromFileChild = (arrayOfGroupedObjects, document) => {
         dataToSendBack = [
           {
             error: ` there is no file for this formula to get the data from: ${
-              formulaGroupObject.formula
+              formulaPartOfName
             }`
           }
         ];
@@ -120,8 +120,7 @@ const getData = (workbookChild, formulaGroupObject) => {
                   let sheet = workbookChild._worksheets[i];
 
                   if (
-                    sheet.name.trim() === lotNotTotals.trim() ||
-                    sheet.name.includes(lotNotTotals.trim())
+                    sheet.name.trim() === lotNotTotals.trim()
                   ) {
                     sheetNameForBin = sheet.name;
                     break;
