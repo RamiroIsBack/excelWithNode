@@ -121,6 +121,7 @@ const getData = (workbookChild, formulaGroupObject) => {
 
                   if (
                     sheet.name.trim() === lotNotTotals.trim()
+   // this was catching more than expected        || sheet.name.includes(lotNotTotals.trim())
                   ) {
                     sheetNameForBin = sheet.name;
                     break;
