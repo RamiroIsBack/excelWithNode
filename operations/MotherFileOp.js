@@ -26,6 +26,7 @@ module.exports.readingMotherFile = documentList => {
       mapSeries(
         documentList,
         (document, callback) => {
+         
           getDataFromFileChild(arrayOfGroupedObjects, document)
             .then(res => {
               callback(null, res);

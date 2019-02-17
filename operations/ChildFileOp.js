@@ -49,18 +49,26 @@ module.exports.getDataFromFileChild = (arrayOfGroupedObjects, document) => {
 
 const getData = (workbookChild, formulaGroupObject) => {
   var inventoryWorksheet = workbookChild.getWorksheet("Inventory Master");
-
+  
   if (!inventoryWorksheet) {
+    let errorLocation = formulaGroupObject.formula;
     throw new Error(
       `${
-        formulaGroupObject.formula
+        errorLocation
       } there is no Inventory Master sheet with this formula in the .xlsx file`
     );
   }
 
   var arrayOfDataFromChildObjects = []; // will contain all data from this child
   var row = inventoryWorksheet.getRow(3);
-
+  if (row.values.length === 0){
+    let errorLocation = formulaGroupObject.formula;
+    throw new Error(
+      `${
+        errorLocation
+      } there is nothing on line 3 of inventory master`
+    );
+  }
   for (let rowIndex = 1; rowIndex < 100; rowIndex++) {
     var itemNum = row.values[rowIndex];
     if (itemNum) {
